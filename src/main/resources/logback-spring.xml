@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+	<springProfile name="local">
+		<property name="LOGS" value="/tmp/logs" />
+		<appender name="Console" class="ch.qos.logback.core.ConsoleAppender">
+			<layout class="ch.qos.logback.classic.PatternLayout">
+				<Pattern>
+                %d{dd-MM-yyyy HH:mm:ss.SSS} %magenta([%thread]) %highlight(%-5level) %logger{36}.%M - %msg%n
+            </Pattern>
+			</layout>
+		</appender>
+		<appender name="RollingFile" class="ch.qos.logback.core.rolling.RollingFileAppender">
+			<file>${LOGS}/locationFinder.log</file>
+			<encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+				<Pattern>%d %p %C{1.} - %m%n</Pattern>
+			</encoder>
+			<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+				<!-- rollover daily and when the file reaches 10 MegaBytes -->
+				<fileNamePattern>${LOGS}/archived/locationFinder-%d{yyyy-MM-dd}.%i.log
+            </fileNamePattern>
+				<timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+					<maxFileSize>10MB</maxFileSize>
+				</timeBasedFileNamingAndTriggeringPolicy>
+			</rollingPolicy>
+		</appender>
+		<!-- LOG everything at WARN level -->
+		<root level="warn">
+			<appender-ref ref="RollingFile" />
+			<appender-ref ref="Console" />
+		</root>
+		<!-- LOG "cs.locationfinder*" at INFO level -->
+		<logger name="cs.locationfinder" level="info" additivity="false">
+			<appender-ref ref="RollingFile" />
+		</logger>
+	</springProfile>
+	<springProfile name="prod">
+		<appender name="CLOUD"
+		class="com.google.cloud.logging.logback.LoggingAppender">
+			<!-- Optional : filter logs at or above a level -->
+			<filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+				<level>INFO</level>
+			</filter>
+			<log>locationFinder.log</log>
+			<!-- Optional : default java.log -->
+			<resourceType>gae_app</resourceType>
+			<!-- Optional : default: auto-detected, fallback: global -->
+			<!-- <enhancer>com.example.logging.logback.enhancers.ExampleEnhancer</enhancer> -->
+			<!-- Optional -->
+			<flushLevel>WARN</flushLevel>
+			<!-- Optional : default ERROR -->
+			<!-- Batched logging requests get immediately flushed for logs at or above this level. -->
+		</appender>
+		<root level="info">
+			<appender-ref ref="CLOUD" />
+		</root>
+	</springProfile>
+</configuration>
+
+<!-- [START logging_logback_config] -->
+<!-- <configuration>
+	<appender name="CLOUD"
+		class="com.google.cloud.logging.logback.LoggingAppender">
+		Optional : filter logs at or above a level
+		<filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+			<level>INFO</level>
+		</filter>
+		<log>locationFinder.log</log> Optional : default java.log
+		<resourceType>gae_app</resourceType> Optional : default: auto-detected, fallback: global
+		<enhancer>com.example.logging.logback.enhancers.ExampleEnhancer</enhancer> Optional
+		<flushLevel>WARN</flushLevel> Optional : default ERROR Batched logging requests get immediately flushed for logs at or above this level.
+	</appender>
+
+	<root level="info">
+		<appender-ref ref="CLOUD" />
+	</root>
+</configuration> -->
+<!-- [END logging_logback_config] -->
