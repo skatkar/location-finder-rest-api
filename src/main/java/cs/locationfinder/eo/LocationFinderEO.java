@@ -11,9 +11,11 @@ import java.util.UUID;
 
 import org.apache.solr.client.solrj.SolrClient;
 import org.apache.solr.client.solrj.SolrServerException;
+import org.apache.solr.client.solrj.SolrRequest.METHOD;
 import org.apache.solr.client.solrj.request.QueryRequest;
 import org.apache.solr.client.solrj.request.UpdateRequest;
 import org.apache.solr.client.solrj.response.QueryResponse;
+import org.apache.solr.client.solrj.response.UpdateResponse;
 import org.apache.solr.common.SolrDocumentList;
 import org.apache.solr.common.params.MapSolrParams;
 import org.slf4j.Logger;
@@ -92,6 +94,38 @@ public class LocationFinderEO {
 		}
 		
 				
+	}
+	
+	public long deleteLocationById(String id) throws SolrServerException, IOException {
+		final String METHOD_NAME = new Object() {}
+	      .getClass()
+	      .getEnclosingMethod()
+	      .getName();
+		
+		UpdateResponse response;
+		
+		try {
+			
+			UpdateRequest request = new UpdateRequest();
+			
+		    request.deleteById(id);
+		    request.setCommitWithin(-1);
+		    
+		    //Code to add the bean and commit it
+		    request.setAction(UpdateRequest.ACTION.COMMIT, true, true);
+		    request.setBasicAuthCredentials(solr_username, solr_password);
+		    response = request.process(solrClient, solr_collection);
+			
+		    logger.info(METHOD_NAME + " ** Number of documents deleted: {} **", response.getResponseHeader());
+		    return response.getStatus();
+			
+		} catch (SolrServerException e) {
+			logger.error(METHOD_NAME + " SolrServerException while deleting the location by id ", e);
+			throw e;
+		} catch(IOException e) {
+			logger.error(METHOD_NAME + " IOException while deleting the location by id ", e);
+			throw e;
+		}
 	}
 
 	public List<LocationVO> getLocationsByType(String type, String limit) throws Exception {

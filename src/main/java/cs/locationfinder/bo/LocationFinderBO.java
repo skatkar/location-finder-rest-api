@@ -30,6 +30,10 @@ public class LocationFinderBO {
 	public List<LocationVO> getLocationsById(String id) throws Exception {
 		return locationFinderEO.getLocationsById(id);
 	}
+	
+	public long deleteLocationById(String id) throws Exception {
+		return locationFinderEO.deleteLocationById(id);
+	}
 
 	public List<LocationVO> getLocationsByType(String type,String limit) throws Exception {
 		return locationFinderEO.getLocationsByType(type,limit);

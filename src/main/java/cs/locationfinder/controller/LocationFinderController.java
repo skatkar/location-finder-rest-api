@@ -5,7 +5,9 @@ package cs.locationfinder.controller;
 
 import java.net.URI;
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,6 +16,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -99,6 +102,44 @@ public class LocationFinderController {
 		
 		
 	}
+	
+	@CrossOrigin
+	@ApiOperation(value = "Delete a location by id", response = ResponseEntity.class)
+	@ApiResponses(value = {
+			 @ApiResponse(code = 200, message = "Successfully deleted location"),
+			 @ApiResponse(code = 404, message = "Requested location id not found at Solr"),
+			 @ApiResponse(code = 500, message = "Server side error")
+	})
+	@DeleteMapping("/api/v1.0/location/{id}")
+	public ResponseEntity<Map<String,String>> deleteLocationById(@PathVariable String id) throws LocationNotFoundException,Exception{
+		final String METHOD_NAME = new Object() {}
+	      .getClass()
+	      .getEnclosingMethod()
+	      .getName();
+		
+		logger.debug(METHOD_NAME + " Starting with delete by id");
+		
+		try {
+			
+			 locationFinderBo.deleteLocationById(id);
+			
+			//if(numberOfDocuments != 0) {
+				logger.info(METHOD_NAME + " Deleted data from Solr");
+				Map<String,String> response = new HashMap<String, String>();
+				response.put("message", "success deleting data");
+				return ResponseEntity.accepted().body(response);
+			//}
+			/*else {
+				logger.error(METHOD_NAME + " Requested location not found at Solr");
+				throw new LocationNotFoundException("Requested location not found at Solr");
+			}*/
+		}catch(Exception ex) {
+			throw ex;
+		}
+		
+		
+	}
+	
 	
 	@CrossOrigin
 	@ApiOperation(value = "View a list of locations by type", response = ResponseEntity.class)
