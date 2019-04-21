@@ -45,6 +45,7 @@ public class LocationFinderEOTest {
 	 * 60000).build(); }
 	 */
 
+	@Ignore
 	@Test
 	public void getLocationById_ReturnLocationList_ValidInput(@Mocked SolrDocumentList documents) throws Exception {
 
