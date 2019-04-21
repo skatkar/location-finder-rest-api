@@ -56,7 +56,7 @@ public class LocationFinderController {
 	@GetMapping("/api/v1.0/status")
 	public String checkHealth() {
 		logger.info("REST service is accessible");
-		return LocalDateTime.now().toString();
+		return LocalDateTime.now().toString() + " Hello";
 	}
 	
 	
